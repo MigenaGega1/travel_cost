@@ -67,6 +67,15 @@ class TravelCostController extends Controller
         $priceInSlot = $minutesInSlot * 12 / 60;
         $priceOutSlot = $minutesoutSlot * 7 / 60;
         $priceByTime = $priceInSlot + $priceOutSlot;
+        if ($priceByTime > 70 && $totalminutes >= 24*60) {
+            $priceByTime = $priceByTime - (6 * 12 + 18 * 7) + 70;
+
+        } else if ($priceByTime > 70 && $totalminutes < 24*60) {
+            $priceByTime = 70;
+
+        } else {
+            $priceByTime = $minutesInSlot * 12/60 + $minutesoutSlot * 7/60;
+        }
         return $priceKm + $priceByTime;
     }
 
