@@ -25,18 +25,14 @@ class TravelCostController extends Controller
         } else {
             $pricekm = $distanca * 5;
         }
+        $priceForMinutes = 4 / 60;
         $startedAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->start_time);
         $endedAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->end_time);
-        $diff = $endedAt->diffInHours($startedAt);
-        $timepriceA = $diff * 4;
+        $diff = $endedAt->diffInMinutes($startedAt);
+        $timepriceA = $diff * $priceForMinutes;
 
         $totalprice = $pricekm + $timepriceA;
-
-
-//      dd(self::calculateB($startedAt,$endedAt,$distanca));
-        dd($totalprice, self::calculateC($startedAt, $endedAt, $distanca));
-
-
+        dd($totalprice, self::calculateB($startedAt, $endedAt, $distanca));
 
 
         return view('travelCost');
@@ -51,36 +47,26 @@ class TravelCostController extends Controller
         // Nga ora 00:00 deri ne oren 06:00 cmimi eshte 12 Euro, jashte kesaj fashe orare cmimi per ore eshte 7 Euro.
         //Nese cmimi kalon mbi 70 Euro atehere per qe nga momenti i nisjes se udhetimit per 24 oret e ardheshme udhetimi do te jete i mbuluar nga ky cmim.
 
-        $totalhours = 0;
-        $hoursoutSlot = 0;
-        $hoursInSlot = 0;
+        $totalminutes = 0;
+        $minutesoutSlot = 0;
+        $minutesInSlot = 0;
         $priceKm = $distanca * 3;
-        for ($d = $d1; $d < $d2; $d->addHour()) {
-            $totalhours++;
+        for ($d = $d1; $d < $d2; $d->addMinute()) {
+            $totalminutes++;
             $s = explode(" ", $d);
             $from = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '00:00:00');
             $to = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '06:00:00');
-            $priceforDay = ["day" => $s[0]];
+
             if ($d >= $from && $d < $to) {
-                $hoursInSlot++;
+                $minutesInSlot++;
             } else {
-                $hoursoutSlot++;
+                $minutesoutSlot++;
             }
         }
-        $totalhours++;
-        $priceInSlot = $hoursInSlot * 12;
-        $priceOutSlot = $hoursoutSlot * 7;
+
+        $priceInSlot = $minutesInSlot * 12 / 60;
+        $priceOutSlot = $minutesoutSlot * 7 / 60;
         $priceByTime = $priceInSlot + $priceOutSlot;
-        if ($priceByTime > 70 && $totalhours >= 24) {
-            $priceByTime = $priceByTime - (6 * 12 + 18 * 7) + 70;
-
-        } else if ($priceByTime > 70 && $totalhours < 24) {
-            $priceByTime = 70;
-
-        } else {
-            $priceByTime = $hoursInSlot * 12 + $hoursoutSlot * 7;
-        }
-
         return $priceKm + $priceByTime;
     }
 
@@ -100,14 +86,13 @@ class TravelCostController extends Controller
         if ($distanca > 100) {
             $priceKm = ($distanca - 100) * 3 + (50 * 5) + (50 * 7);
         }
-        $totalhours = 0;
-        $hoursoutSlot = 0;
-        $hoursInSlot1 = 0;
-        $hoursInSlot2 = 0;
-        $hoursInSlot3 = 0;
-        $hoursInSlotC = 0;
-        for ($c = $d1; $c < $d2; $c->addHour()) {
-            $totalhours++;
+        $totalminutes = 0;
+        $minutesoutSlot = 0;
+        $minutesInSlot1 = 0;
+        $minutesInSlot2 = 0;
+        $minutesInSlot3 = 0;
+        for ($c = $d1; $c < $d2; $c->addMinute()) {
+            $totalminutes++;
             $s = explode(" ", $c);
             $t1 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '00:00:00');
             $t2 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '07:00:00');
@@ -115,16 +100,16 @@ class TravelCostController extends Controller
             $t4 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '16:00:00');
             $t5 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '18:30:00');
             if ($c >= $t1 && $c < $t2) {
-                $hoursInSlot1++;
+                $minutesInSlot1++;
             } elseif ($c >= $t2 && $c < $t3) {
-                $hoursInSlot2++;
+                $minutesInSlot2++;
             } elseif ($c >= $t4 && $c < $t5) {
-                $hoursInSlot3++;
+                $minutesInSlot3++;
             } else {
-                $hoursoutSlot++;
+                $minutesoutSlot++;
             }
         }
-        $timePrice = $hoursInSlot1 * 10 + $hoursInSlot2 * 8 + $hoursInSlot3 * 8 + $hoursoutSlot * 5;;
+        $timePrice = $minutesInSlot1 * 10 / 60 + $minutesInSlot2 * 8 / 60 + $minutesInSlot3 * 8 / 60 + $minutesoutSlot * 5 / 60;;
         return $timePrice + $priceKm;
     }
 
