@@ -13,17 +13,23 @@
     <br />
     <br />
     <br />
-
+   <p></p>
     @csrf
     <div class="flex space-x-3">
+
         <div class="col-md-4">
+            <label>Start Time</label>
             <input type="datetime-local" name="start_time" id="start_time" class="form-control" />
         </div>
 
         <div class="col-md-4">
+            <label>End Time</label>
             <input type="datetime-local" name="end_time" id="end_time" class="form-control"  />
         </div>
-        <input  type="number" name="distanca" class="form-control"/>
+        <div class="col-md-4">
+            <label>Distance in km</label>
+        <input  type="number" name="distance" class="form-control"/>
+        </div>
     </div>
     <br />
     <br />
