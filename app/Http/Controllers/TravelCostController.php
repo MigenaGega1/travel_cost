@@ -22,22 +22,18 @@ class TravelCostController extends Controller
         //Cmimi per kilometer eshte 5 Euro. Nese udhetimi kalon mbi 100 kilometra cmimi per kilometrat e tjera do te jete 3 Euro per kilometer.
         //Cmimi per ore eshte 4 Euro per nje ore udhetimi.
 
-//        if ($distanca > 100) {
-//            $pricekm = ($distanca - 100) * 3 + (100 * 5);
-//        } else {
-//            $pricekm = $distanca * 5;
-//        }
-//        $priceForMinutes = 4 / 60;
+        if ($distanca > 100) {
+            $pricekm = ($distanca - 100) * 3 + (100 * 5);
+        } else {
+            $pricekm = $distanca * 5;
+        }
+        $priceForMinutes = 4 / 60;
         $startedAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->start_time);
         $endedAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->end_time);
-        dd(self::calculateB($startedAt, $endedAt, $distanca));
-//        $diff = $endedAt->diffInMinutes($startedAt);
-
-//        $timepriceA = $diff * $priceForMinutes;
-//        $totalprice = $pricekm + $timepriceA;
-        $price = 0;
-        $pricekm = $distanca * 3;
-        $priceTime = 0;
+        $diff = $endedAt->diffInMinutes($startedAt);
+        $timepriceA = $diff * $priceForMinutes;
+        $totalprice = $pricekm + $timepriceA;
+        dd($totalprice, self::calculateB($startedAt, $endedAt, $distanca));
 
 
         return view('travelCost');
@@ -96,8 +92,8 @@ class TravelCostController extends Controller
             $priceKm = ($distanca - 100) * 3 + (50 * 5) + (50 * 7);
         }
 
-       $price=0;
-        while($d1<=$d2){
+        $price = 0;
+        while ($d1 <= $d2) {
             $s = explode(" ", $d1);
             $t1 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '00:00:00');
             $t2 = Carbon::createFromFormat('Y-m-d H:i:s', $s[0] . ' ' . '07:00:00');
